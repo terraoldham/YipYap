@@ -14,6 +14,7 @@ import UIKit
 
 class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
     @IBOutlet weak var tableView: UITableView!
+
     
     weak var delegate: FiltersViewControllerDelegate?
 
@@ -27,6 +28,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         tableView.dataSource = self
 
         categories = yelpCategories()
+        
     }
 
     override func didReceiveMemoryWarning() {
