@@ -8,10 +8,18 @@
 
 import UIKit
 
-class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    @IBOutlet weak var tableView: UITableView!
+@objc protocol FiltersViewControllerDelegate {
+    @objc optional func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String:AnyObject])
+}
 
-    var categories: [[String: String]]
+class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
+    @IBOutlet weak var tableView: UITableView!
+    
+    weak var delegate: FiltersViewControllerDelegate?
+
+    var categories: [[String: String]]!
+    var switchStates = [Int:Bool]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -19,7 +27,6 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         tableView.dataSource = self
 
         categories = yelpCategories()
-        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
@@ -33,6 +40,19 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
 
     @IBAction func onSaveButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
+        var filters: [String: AnyObject] = [:]
+        var selectedCategories = [String]()
+        for (row,isSelected) in switchStates {
+            if isSelected {
+                selectedCategories.append(categories[row]["value"]!)
+            }
+        }
+        
+        if selectedCategories.count > 0 {
+            filters["categories"] = selectedCategories as AnyObject
+        }
+        
+        delegate?.filtersViewController?(filtersViewController: self, didUpdateFilters: filters)
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -40,7 +60,20 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let 
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
+        
+        cell.switchLabel.text = categories[indexPath.row]["title"]
+        cell.delegate = self
+        cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
+        
+        return cell
+    }
+    
+    func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {
+        let indexPath = tableView.indexPath(for: switchCell)!
+        
+        switchStates[indexPath.row] = value
+        print("Got the switch")
     }
     
     func yelpCategories() -> [[String:String]] {
