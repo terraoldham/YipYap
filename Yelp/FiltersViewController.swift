@@ -12,13 +12,23 @@ import UIKit
     @objc optional func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String:AnyObject])
 }
 
+enum FiltersBlocks : String {
+    case categoriesBlock = "Category"
+    case dealsBlock = ""
+    case sortBlock = "Sort"
+    
+}
+
 class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
     @IBOutlet weak var tableView: UITableView!
 
     
     weak var delegate: FiltersViewControllerDelegate?
-
+    
+    var allFilters = [[String:AnyObject]]()
     var categories: [[String: String]]!
+    var deals: [[String:AnyObject]]!
+    var sort: [[String:AnyObject]]!
     var switchStates = [Int:Bool]()
     
     override func viewDidLoad() {
@@ -28,6 +38,18 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         tableView.dataSource = self
 
         categories = yelpCategories()
+        deals = yelpDeal()
+        sort = yelpSort()
+        
+        for sorted in sort {
+            allFilters.append(sorted as [String : AnyObject])
+        }
+        for deal in deals {
+            allFilters.append(deal as [String : AnyObject])
+        }
+        for category in categories {
+            allFilters.append(category as [String : AnyObject])
+        }
         
     }
 
@@ -43,28 +65,51 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     @IBAction func onSaveButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
         var filters: [String: AnyObject] = [:]
-        var selectedCategories = [String]()
+        var sortFilters = [AnyObject]()
+        var categoryFilters = [AnyObject]()
+        var dealFilters = [AnyObject]()
+        var selectedFilters = [AnyObject]()
         for (row,isSelected) in switchStates {
             if isSelected {
-                selectedCategories.append(categories[row]["value"]!)
+                if allFilters[row]["value"] != nil {
+                    selectedFilters.append((allFilters[row]["value"] as? AnyObject)!)
+                    categoryFilters.append((allFilters[row]["value"] as? AnyObject)!)
+                    print("Category")
+                }
+                if allFilters[row]["sort_value"] != nil {
+                    selectedFilters.append((allFilters[row]["sort_value"] as? AnyObject)!)
+                    sortFilters.append((allFilters[row]["sort_value"] as? AnyObject)!)
+                    print("Sort Filters")
+                    print(sortFilters)
+                }
+                if allFilters[row]["deal_value"] != nil {
+                    selectedFilters.append((allFilters[row]["deal_value"] as? AnyObject)!)
+                    dealFilters.append((allFilters[row]["deal_value"] as? AnyObject)!)
+                    print("Deal")
+                    print(dealFilters)
+                }
             }
         }
         
-        if selectedCategories.count > 0 {
-            filters["categories"] = selectedCategories as AnyObject
+        if selectedFilters.count > 0 {
+            filters["allFilters"] = selectedFilters as AnyObject
+            print(filters)
+            print(categoryFilters)
+            print(sortFilters)
+            print(dealFilters)
         }
         
-        delegate?.filtersViewController?(filtersViewController: self, didUpdateFilters: filters)
+        delegate?.filtersViewController?(filtersViewController: self, didUpdateFilters: filters as [String : AnyObject])
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return allFilters.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
         
-        cell.switchLabel.text = categories[indexPath.row]["title"]
+        cell.switchLabel.text = String(describing: allFilters[indexPath.row]["title"])
         cell.delegate = self
         cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
         
@@ -250,6 +295,16 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
             ["title": "Wraps", "value": "wraps"],
             ["title": "Yugoslav", "value": "yugoslav"]
         ]
+    }
+    
+    func yelpSort() -> [[String:AnyObject]] {
+        return[["title": "Best Match" as AnyObject, "sort_value": YelpSortMode.bestMatched.rawValue as AnyObject],
+               ["title": "Distance" as AnyObject, "sort_value": YelpSortMode.distance.rawValue as AnyObject],
+               ["title": "Highest Rated" as AnyObject, "sort_value": YelpSortMode.highestRated.rawValue as AnyObject]]
+    }
+    
+    func yelpDeal() -> [[String:AnyObject]] {
+        return [["title": "Offering a Deal" as AnyObject, "deal_value": true as AnyObject]]
     }
 
 }
