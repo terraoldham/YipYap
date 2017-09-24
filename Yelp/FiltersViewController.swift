@@ -65,38 +65,48 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     @IBAction func onSaveButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
         var filters: [String: AnyObject] = [:]
-        var sortFilters = [AnyObject]()
-        var categoryFilters = [AnyObject]()
-        var dealFilters = [AnyObject]()
+        var sortFilters = [Int]()
+        var categoryFilters = [String]()
+        var dealFilters = Bool()
         var selectedFilters = [AnyObject]()
         for (row,isSelected) in switchStates {
             if isSelected {
                 if allFilters[row]["value"] != nil {
                     selectedFilters.append((allFilters[row]["value"] as? AnyObject)!)
-                    categoryFilters.append((allFilters[row]["value"] as? AnyObject)!)
-                    print("Category")
+                    categoryFilters.append((allFilters[row]["value"] as? String)!)
                 }
                 if allFilters[row]["sort_value"] != nil {
                     selectedFilters.append((allFilters[row]["sort_value"] as? AnyObject)!)
-                    sortFilters.append((allFilters[row]["sort_value"] as? AnyObject)!)
-                    print("Sort Filters")
-                    print(sortFilters)
+                    sortFilters.append((allFilters[row]["sort_value"] as! Int))
                 }
                 if allFilters[row]["deal_value"] != nil {
                     selectedFilters.append((allFilters[row]["deal_value"] as? AnyObject)!)
-                    dealFilters.append((allFilters[row]["deal_value"] as? AnyObject)!)
-                    print("Deal")
-                    print(dealFilters)
+                    dealFilters = allFilters[row]["deal_value"] as! Bool
                 }
             }
         }
         
         if selectedFilters.count > 0 {
             filters["allFilters"] = selectedFilters as AnyObject
+            if sortFilters.count > 0 {
+                let sorting = sortFilters[0] as AnyObject
+                filters["sortFilters"] = sorting
+            } else {
+                filters["sortFilters"] = nil
+            }
+            filters["categoryFilters"] = categoryFilters as AnyObject
+            filters["dealFilters"] = dealFilters as AnyObject
+            print("Filters")
             print(filters)
+            print("Category Filters")
             print(categoryFilters)
+            print(filters["categoryFilters"])
+            print("Sort Filters")
             print(sortFilters)
+            print(filters["sortFilters"])
+            print("Deal Filters")
             print(dealFilters)
+            print(filters["dealFilters"])
         }
         
         delegate?.filtersViewController?(filtersViewController: self, didUpdateFilters: filters as [String : AnyObject])

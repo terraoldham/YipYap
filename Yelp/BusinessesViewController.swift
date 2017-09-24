@@ -88,8 +88,19 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
         
-        var categories = filters["categories"] as? [String]
-        Business.searchWithTerm(term: "", sort: nil, categories: categories, deals: nil, completion: { (businesses: [Business]?, error: Error?) -> Void in
+        print("Help")
+        var categories = filters["categoryFilters"] as? [String]
+        var sort = filters["sortFilters"] as? Int
+        var deal = filters["dealFilters"] as? Bool
+        var catergorySearch = categories ?? nil
+        var sortSearch = sort ?? 0
+        var dealSearch = deal ?? nil
+        print(categories, sort, deal)
+        print("Deal")
+        print(deal)
+        print("Sort")
+        print(sort)
+        Business.searchWithTerm(term: "", sort: YelpSortMode(rawValue: sortSearch), categories: catergorySearch, deals: dealSearch, completion: { (businesses: [Business]?, error: Error?) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
         }
