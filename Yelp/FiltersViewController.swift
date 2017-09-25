@@ -13,10 +13,10 @@ import UIKit
 }
 
 enum FiltersBlocks : String {
-    case categoriesBlock = "Category"
-    case dealsBlock = ""
     case sortBlock = "Sort"
-    
+    case distanceBlock = "Distance"
+    case dealsBlock = "Has Deal"
+    case categoriesBlock = "Category"
 }
 
 class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
@@ -29,6 +29,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     var categories: [[String: String]]!
     var deals: [[String:AnyObject]]!
     var sort: [[String:AnyObject]]!
+    var distance: [[String:AnyObject]]!
     var switchStates = [Int:Bool]()
     
     override func viewDidLoad() {
@@ -40,9 +41,13 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         categories = yelpCategories()
         deals = yelpDeal()
         sort = yelpSort()
+        distance = yelpDistance()
         
         for sorted in sort {
             allFilters.append(sorted as [String : AnyObject])
+        }
+        for distanced in distance {
+            allFilters.append(distanced as [String : AnyObject])
         }
         for deal in deals {
             allFilters.append(deal as [String : AnyObject])
@@ -66,6 +71,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         dismiss(animated: true, completion: nil)
         var filters: [String: AnyObject] = [:]
         var sortFilters = [Int]()
+        var distanceFilters = [String]()
         var categoryFilters = [String]()
         var dealFilters = Bool()
         var selectedFilters = [AnyObject]()
@@ -83,6 +89,10 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
                     selectedFilters.append((allFilters[row]["deal_value"] as? AnyObject)!)
                     dealFilters = allFilters[row]["deal_value"] as! Bool
                 }
+                if allFilters[row]["distance_value"] != nil {
+                    selectedFilters.append((allFilters[row]["distance_value"] as? AnyObject)!)
+                    distanceFilters.append((allFilters[row]["distance_value"] as! String))
+                }
             }
         }
         
@@ -94,19 +104,14 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
             } else {
                 filters["sortFilters"] = nil
             }
+            if distanceFilters.count > 0 {
+                let distanceFrom = distanceFilters[0] as AnyObject
+                filters["distanceFilters"] = distanceFrom
+            } else {
+                filters["distanceFilters"] = nil
+            }
             filters["categoryFilters"] = categoryFilters as AnyObject
             filters["dealFilters"] = dealFilters as AnyObject
-            print("Filters")
-            print(filters)
-            print("Category Filters")
-            print(categoryFilters)
-            print(filters["categoryFilters"])
-            print("Sort Filters")
-            print(sortFilters)
-            print(filters["sortFilters"])
-            print("Deal Filters")
-            print(dealFilters)
-            print(filters["dealFilters"])
         }
         
         delegate?.filtersViewController?(filtersViewController: self, didUpdateFilters: filters as [String : AnyObject])
@@ -119,7 +124,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
         
-        cell.switchLabel.text = String(describing: allFilters[indexPath.row]["title"])
+        cell.switchLabel.text = allFilters[indexPath.row]["title"]! as! String
         cell.delegate = self
         cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
         
@@ -317,4 +322,11 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         return [["title": "Offering a Deal" as AnyObject, "deal_value": true as AnyObject]]
     }
 
+    func yelpDistance() -> [[String:AnyObject]] {
+        return [["title": ".5 Miles" as AnyObject, "distance_value": "805" as AnyObject],
+                ["title": "1 Mile" as AnyObject, "distance_value": "1609" as AnyObject],
+                ["title": "2 Miles" as AnyObject, "distance_value": "3219" as AnyObject],
+                ["title": "5 Miles" as AnyObject, "distance_value": "8047" as AnyObject],
+                ["title": "10 Miles" as AnyObject, "distance_value": "16093" as AnyObject]]
+    }
 }

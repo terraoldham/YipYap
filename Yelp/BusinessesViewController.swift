@@ -89,18 +89,16 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
         
         print("Help")
-        var categories = filters["categoryFilters"] as? [String]
-        var sort = filters["sortFilters"] as? Int
-        var deal = filters["dealFilters"] as? Bool
-        var catergorySearch = categories ?? nil
-        var sortSearch = sort ?? 0
-        var dealSearch = deal ?? nil
-        print(categories, sort, deal)
-        print("Deal")
-        print(deal)
-        print("Sort")
-        print(sort)
-        Business.searchWithTerm(term: "", sort: YelpSortMode(rawValue: sortSearch), categories: catergorySearch, deals: dealSearch, completion: { (businesses: [Business]?, error: Error?) -> Void in
+        let categories = filters["categoryFilters"] as? [String]
+        let sort = filters["sortFilters"] as? Int
+        let distance = filters["distanceFilters"] as? String
+        let deal = filters["dealFilters"] as? Bool
+        let catergorySearch = categories ?? nil
+        let sortSearch = sort ?? 0
+        let distanceSearch = distance ?? "8047"
+        let dealSearch = deal ?? nil
+        print(catergorySearch, sortSearch, distanceSearch, dealSearch)
+        Business.searchWithTerm(term: "", sort: YelpSortMode(rawValue: sortSearch)!, categories: catergorySearch!, deals: dealSearch!, distance: distanceSearch, completion: { (businesses: [Business]?, error: Error?) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
         }
@@ -108,7 +106,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func reloadRestaurants(searchText: String) {
-        Business.searchWithTerm(term: "" + searchText, sort: nil, categories: nil, deals: nil, completion: { (businesses: [Business]?, error: Error?) -> Void in
+        Business.searchWithTerm(term: "" + searchText, sort: nil, categories: nil, deals: nil, distance: "", completion: { (businesses: [Business]?, error: Error?) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
             }
