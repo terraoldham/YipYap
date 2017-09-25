@@ -116,26 +116,63 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         
         delegate?.filtersViewController?(filtersViewController: self, didUpdateFilters: filters as [String : AnyObject])
     }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return allFilters.count
-    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
-        
-        cell.switchLabel.text = allFilters[indexPath.row]["title"]! as! String
         cell.delegate = self
-        cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
         
+        switch indexPath.section {
+        case 0:
+            cell.switchLabel.text = sort[indexPath.row]["title"]! as! String
+            cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
+        case 1:
+            cell.switchLabel.text = distance[indexPath.row]["title"]! as! String
+            cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
+        case 2:
+            cell.switchLabel.text = deals[indexPath.row]["title"]! as! String
+            cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
+        case 3:
+            cell.switchLabel.text = categories[indexPath.row]["title"]! as! String
+            cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
+        default:
+            break
+        }
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch section {
+        case 0:
+            return sort.count
+        case 1:
+            return distance.count
+        case 2:
+            return deals.count
+        case 3:
+            return categories.count
+        default:
+            return 0
+        }
+    }
+    
+    let sectionBlocks: [FiltersBlocks] = [.sortBlock, .distanceBlock, .dealsBlock, .categoriesBlock]
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sectionBlocks[section].rawValue
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        // Distance, Deal, Category, Sort
+        return 4
+    }
+    
     
     func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {
         let indexPath = tableView.indexPath(for: switchCell)!
         
         switchStates[indexPath.row] = value
         print("Got the switch")
+        print(indexPath.row)
     }
     
     func yelpCategories() -> [[String:String]] {
