@@ -27,7 +27,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         searchBar.delegate = self
         navigationItem.titleView = searchBar
         
-        Business.searchWithTerm(term: "" + self.searchBar.text!, completion: { (businesses: [Business]?, error: Error?) -> Void in
+        Business.searchWithTerm(term: "Restaurants" + self.searchBar.text!, completion: { (businesses: [Business]?, error: Error?) -> Void in
             
             self.businesses = businesses
             self.tableView.reloadData()
@@ -82,13 +82,19 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let navigationController = segue.destination as! UINavigationController
-        let filtersViewController = navigationController.topViewController as! FiltersViewController
-        filtersViewController.delegate = self
+        if let button = sender as? UIBarButtonItem {
+            if button.title == "Filters" {
+                let filtersViewController = navigationController.topViewController as! FiltersViewController
+                filtersViewController.delegate = self
+            } else {
+                let mapsViewController = navigationController.topViewController as! MapViewController
+                mapsViewController.businesses = self.businesses
+            }
+        }
     }
     
     func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
         
-        print("Help")
         let categories = filters["categoryFilters"] as? [String]
         let sort = filters["sortFilters"] as? Int
         let distance = filters["distanceFilters"] as? String
@@ -98,7 +104,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         let distanceSearch = distance ?? "8047"
         let dealSearch = deal ?? nil
         print(catergorySearch, sortSearch, distanceSearch, dealSearch)
-        Business.searchWithTerm(term: "", sort: YelpSortMode(rawValue: sortSearch)!, categories: catergorySearch!, deals: dealSearch!, distance: distanceSearch, completion: { (businesses: [Business]?, error: Error?) -> Void in
+        Business.searchWithTerm(term: "Restaurants", sort: YelpSortMode(rawValue: sortSearch)!, categories: catergorySearch!, deals: dealSearch!, distance: distanceSearch, completion: { (businesses: [Business]?, error: Error?) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
         }
@@ -106,7 +112,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func reloadRestaurants(searchText: String) {
-        Business.searchWithTerm(term: "" + searchText, sort: nil, categories: nil, deals: nil, distance: "", completion: { (businesses: [Business]?, error: Error?) -> Void in
+        Business.searchWithTerm(term: "Restaurants" + searchText, sort: nil, categories: nil, deals: nil, distance: "", completion: { (businesses: [Business]?, error: Error?) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
             }

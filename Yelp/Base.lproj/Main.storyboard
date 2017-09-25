@@ -136,7 +136,12 @@
                     <navigationItem key="navigationItem" title="YipYap" id="O2c-gS-sOh">
                         <barButtonItem key="leftBarButtonItem" title="Filters" id="B3H-jD-3C1">
                             <connections>
-                                <segue destination="qdu-8h-d21" kind="presentation" id="La2-tO-fxh"/>
+                                <segue destination="qdu-8h-d21" kind="presentation" identifier="Filter" id="La2-tO-fxh"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Map" id="DZ5-fg-U4X">
+                            <connections>
+                                <segue destination="eaL-Hh-P2B" kind="show" identifier="Map" id="HYI-kD-BRc"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -153,6 +158,40 @@
                 </searchBar>
             </objects>
             <point key="canvasLocation" x="2727.1999999999998" y="357.57121439280365"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="Lsf-bH-mID">
+            <objects>
+                <viewController id="sIY-IT-YQg" customClass="MapViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="g21-nJ-gUz"/>
+                        <viewControllerLayoutGuide type="bottom" id="Bqg-Cl-OcG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ecS-qF-bxJ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="caD-aD-JNe">
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="C8q-65-X5i">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="vy1-FP-zCW">
+                            <connections>
+                                <action selector="onCancel:" destination="sIY-IT-YQg" id="1BX-n5-CjN"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="mapView" destination="caD-aD-JNe" id="440-xy-gqP"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QlB-gr-CCp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3664.8000000000002" y="1137.481259370315"/>
         </scene>
         <!--Filters-->
         <scene sceneID="Y4E-Va-uIZ">
@@ -265,6 +304,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mcc-FF-qCZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3525.5999999999999" y="349.47526236881561"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="pBD-S6-I93">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eaL-Hh-P2B" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Zf4-dj-oZC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="sIY-IT-YQg" kind="relationship" relationship="rootViewController" id="5wv-EJ-iJZ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dfI-oW-wpf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2725.5999999999999" y="1137.481259370315"/>
         </scene>
     </scenes>
 </document>
